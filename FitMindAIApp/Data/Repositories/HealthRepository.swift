@@ -9,6 +9,7 @@ import Foundation
 import HealthKit
 
 final class HealthRepositoryImpl: HealthRepositoryProtocol {
+
     private let healthKit: HealthKitServiceProtocol
 
     init(healthKit: HealthKitServiceProtocol = HealthKitService.shared) {
@@ -23,12 +24,12 @@ final class HealthRepositoryImpl: HealthRepositoryProtocol {
         healthKit.fetchSleepHours(completion: completion)
     }
 
-    func fetchWeeklyStepData() async -> [DailyStep] {
-        await healthKit.fetchWeeklyStepData()
+    func fetchStepData(from startDate: Date, to endDate: Date) async -> [DailyStep] {
+        return await healthKit.fetchStepData(from: startDate, to: endDate)
     }
 
-    func fetchWeeklySleepData() async -> [DailySleep] {
-        await healthKit.fetchWeeklySleepData()
+    func fetchSleepData(from startDate: Date, to endDate: Date) async -> [DailySleep] {
+        return await healthKit.fetchSleepData(from: startDate, to: endDate)
     }
 
     func requestHealthAuthorization(completion: @escaping (Bool) -> Void) {

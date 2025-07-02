@@ -89,45 +89,38 @@ final class HealthKitService: HealthKitServiceProtocol {
 
     // MARK: - Weekly Data
 
-        func fetchWeeklyStepData() async -> [DailyStep] {
-            await withCheckedContinuation { continuation in
-                var results: [DailyStep] = []
-                guard let stepType = HKQuantityType.quantityType(forIdentifier: .stepCount) else {
-                    continuation.resume(returning: [])
-                    return
-                }
-
-                let calendar = Calendar.current
-                let now = Date()
-                guard let startDate = calendar.date(byAdding: .day, value: -6, to: calendar.startOfDay(for: now)) else {
-                    continuation.resume(returning: [])
-                    return
-                }
-
-                let predicate = HKQuery.predicateForSamples(withStart: startDate, end: now)
-                let interval = DateComponents(day: 1)
-
-                let query = HKStatisticsCollectionQuery(
-                    quantityType: stepType,
-                    quantitySamplePredicate: predicate,
-                    options: .cumulativeSum,
-                    anchorDate: startDate,
-                    intervalComponents: interval
-                )
-
-                query.initialResultsHandler = { _, stats, _ in
-                    stats?.enumerateStatistics(from: startDate, to: now) { stat, _ in
-                        let steps = stat.sumQuantity()?.doubleValue(for: .count()) ?? 0
-                        results.append(DailyStep(date: stat.startDate, steps: Int(steps)))
-                    }
-                    continuation.resume(returning: results)
-                }
-
-                healthStore.execute(query)
+    func fetchStepData(from startDate: Date, to endDate: Date) async -> [DailyStep] {
+        await withCheckedContinuation { continuation in
+            var results: [DailyStep] = []
+            guard let stepType = HKQuantityType.quantityType(forIdentifier: .stepCount) else {
+                continuation.resume(returning: [])
+                return
             }
-        }
 
-    func fetchWeeklySleepData() async -> [DailySleep] {
+            let predicate = HKQuery.predicateForSamples(withStart: startDate, end: endDate)
+            let interval = DateComponents(day: 1)
+
+            let query = HKStatisticsCollectionQuery(
+                quantityType: stepType,
+                quantitySamplePredicate: predicate,
+                options: .cumulativeSum,
+                anchorDate: startDate,
+                intervalComponents: interval
+            )
+
+            query.initialResultsHandler = { _, stats, _ in
+                stats?.enumerateStatistics(from: startDate, to: endDate) { stat, _ in
+                    let steps = stat.sumQuantity()?.doubleValue(for: .count()) ?? 0
+                    results.append(DailyStep(date: stat.startDate, steps: Int(steps)))
+                }
+                continuation.resume(returning: results)
+            }
+
+            healthStore.execute(query)
+        }
+    }
+
+    func fetchSleepData(from startDate: Date, to endDate: Date) async -> [DailySleep] {
         await withCheckedContinuation { continuation in
             var results: [DailySleep] = []
             guard let sleepType = HKObjectType.categoryType(forIdentifier: .sleepAnalysis) else {
@@ -135,23 +128,16 @@ final class HealthKitService: HealthKitServiceProtocol {
                 return
             }
 
-            let calendar = Calendar.current
-            let now = Date()
-            guard let startDate = calendar.date(byAdding: .day, value: -6, to: calendar.startOfDay(for: now)),
-                  let endOfToday = calendar.date(bySettingHour: 23, minute: 59, second: 59, of: now) else {
-                continuation.resume(returning: [])
-                return
-            }
-
-            let predicate = HKQuery.predicateForSamples(withStart: startDate, end: endOfToday)
+            let predicate = HKQuery.predicateForSamples(withStart: startDate, end: endDate)
 
             let query = HKSampleQuery(sampleType: sleepType, predicate: predicate, limit: HKObjectQueryNoLimit, sortDescriptors: nil) { _, samples, _ in
                 let sleepSamples = samples as? [HKCategorySample] ?? []
 
+                let calendar = Calendar.current
                 var grouped: [Date: TimeInterval] = [:]
 
                 for sample in sleepSamples where sample.value == HKCategoryValueSleepAnalysis.asleep.rawValue {
-                    let day = calendar.startOfDay(for: sample.endDate) // <-- optionally use endDate
+                    let day = calendar.startOfDay(for: sample.endDate)
                     grouped[day, default: 0] += sample.endDate.timeIntervalSince(sample.startDate)
                 }
 

@@ -10,7 +10,7 @@ import Foundation
 protocol HealthRepositoryProtocol {
     func getTodaySteps(completion: @escaping (Int) -> Void)
     func getSleepHours(completion: @escaping (Double) -> Void)
-    func fetchWeeklyStepData() async -> [DailyStep]
-    func fetchWeeklySleepData() async -> [DailySleep]
+    func fetchStepData(from startDate: Date, to endDate: Date) async -> [DailyStep]
+    func fetchSleepData(from startDate: Date, to endDate: Date) async -> [DailySleep]
     func requestHealthAuthorization(completion: @escaping (Bool) -> Void)
 }

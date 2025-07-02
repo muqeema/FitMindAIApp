@@ -9,16 +9,17 @@ import SwiftUI
 import Charts
 
 struct WeeklyChartView: View {
-    let weeklySteps: [DailyStep]
-    let weeklySleep: [DailySleep]
+    @ObservedObject var viewModel: DashboardViewModel
 
     var body: some View {
+        let comparison = DashboardAnalytics.computeWeeklyComparison(currentSteps: viewModel.weeklySteps, previousSteps: viewModel.previousWeekSteps, currentSleep: viewModel.weeklySleepHours, previousSleep: viewModel.previousWeekSleepHours)
+        let wellness = DashboardAnalytics.computeWellnessScore(steps: viewModel.weeklySteps, sleep: viewModel.weeklySleepHours, stepTarget: viewModel.stepTarget, sleepTarget: viewModel.sleepTarget)
         ScrollView {
             VStack(spacing: 30) {
                 Text("Weekly Steps")
                     .font(.headline)
 
-                Chart(weeklySteps) { item in
+                Chart(viewModel.weeklySteps) { item in
                     BarMark(
                         x: .value("Day", item.date, unit: .day),
                         y: .value("Steps", item.steps)
@@ -30,7 +31,7 @@ struct WeeklyChartView: View {
                 Text("Weekly Sleep Hours")
                     .font(.headline)
 
-                Chart(weeklySleep) { item in
+                Chart(viewModel.weeklySleepHours) { item in
                     BarMark(
                         x: .value("Day", item.date, unit: .day),
                         y: .value("Hours", item.hours)
@@ -38,6 +39,24 @@ struct WeeklyChartView: View {
                     .foregroundStyle(.green)
                 }
                 .frame(height: 200)
+
+                ExpandableCard(
+                    title: "Weekly Comparison",
+                    summary: "Steps: \(comparison.stepsDelta >= 0 ? "↑" : "↓") \(comparison.stepsDelta)",
+                    details: "Sleep change: \(String(format: "%.1f", comparison.sleepDelta)) hrs"
+                )
+
+                ExpandableCard(
+                    title: "Goal Trends",
+                    summary: "Target tracking this week",
+                    details: DashboardAnalytics.trendSummary(steps: viewModel.weeklySteps, sleep: viewModel.weeklySleepHours, stepTarget: viewModel.stepTarget, sleepTarget: viewModel.sleepTarget)
+                )
+
+                ExpandableCard(
+                    title: "Wellness Score",
+                    summary: "\(wellness) / 100",
+                    details: "Based on weekly step & sleep goals"
+                )
             }
             .padding()
         }

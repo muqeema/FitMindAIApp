@@ -7,41 +7,57 @@
 
 import Foundation
 import HealthKit
+import SwiftUI
 
 final class DashboardViewModel: ObservableObject {
+    
     @Published var steps: Int = 0
     @Published var sleepHours: Double = 0
+    
     @Published var weeklySteps: [DailyStep] = []
+    @Published var previousWeekSteps: [DailyStep] = []
+    
     @Published var weeklySleepHours: [DailySleep] = []
+    @Published var previousWeekSleepHours: [DailySleep] = []
+    
     @Published var insightHistory: [AIInsight] = []
-    @Published var isOnboarded: Bool = false
     @Published var aiInsight: String = ""
 
     private let healthRepo: HealthRepositoryProtocol
     private let aiRepo: AIRepository
     private let healthStore = HKHealthStore()
 
+    @AppStorage("stepTarget") var stepTarget: Int = 7000
+    @AppStorage("sleepTarget") var sleepTarget: Double = 7.0
+    
+    
     init(healthRepo: HealthRepositoryProtocol, aiRepo: AIRepository) {
         self.healthRepo = healthRepo
         self.aiRepo = aiRepo
         requestHealthAuthorization()
-        isHealthKitPermissionGranted()
     }
 
     func loadWeeklyHealthData() async {
-        let steps = await healthRepo.fetchWeeklyStepData()
-            let sleep = await healthRepo.fetchWeeklySleepData()
+        let currentRange = DateRange.currentWeek()
+        let previousRange = DateRange.previousWeek()
 
-            DispatchQueue.main.async {
-                self.weeklySteps = steps
-                self.weeklySleepHours = sleep
-            }
+        let currentSteps = await healthRepo.fetchStepData(from: currentRange.start, to: currentRange.end)
+        let currentSleep = await healthRepo.fetchSleepData(from: currentRange.start, to: currentRange.end)
+
+        let previousSteps = await healthRepo.fetchStepData(from: previousRange.start, to: previousRange.end)
+        let previousSleep = await healthRepo.fetchSleepData(from: previousRange.start, to: previousRange.end)
+
+        DispatchQueue.main.async {
+            self.weeklySteps = currentSteps
+            self.weeklySleepHours = currentSleep
+            self.previousWeekSteps = previousSteps
+            self.previousWeekSleepHours = previousSleep
+        }
     }
     
     func requestHealthAuthorization() {
         healthRepo.requestHealthAuthorization { [weak self] success in
             guard success else { return }
-            self?.fetchHealthData()
             Task {
                 await self?.loadWeeklyHealthData()
             }
@@ -63,58 +79,15 @@ final class DashboardViewModel: ObservableObject {
     }
 
     func fetchAIInsight() async {
-        let summary = "User walked \(steps) steps and slept \(sleepHours) hours."
-        if let insight = await aiRepo.getHealthInsight(from: summary) {
-            let newInsight = AIInsight(date: Date(), summary: summary, insight: insight)
+        if let newInsight = await AIInsightUseCase.generateInsight(steps: steps, sleep: sleepHours, using: aiRepo) {
             DispatchQueue.main.async {
-                self.aiInsight = insight
+                self.aiInsight = newInsight.insight
                 self.insightHistory.append(newInsight)
-                self.saveInsightsToStorage()
+                InsightStorageService.save(self.insightHistory)
             }
         }
     }
 
-
-    private let insightsKey = "aiInsightHistory"
-
-    func loadInsightsFromStorage() {
-        if let data = UserDefaults.standard.data(forKey: insightsKey) {
-            do {
-                let decoded = try JSONDecoder().decode([AIInsight].self, from: data)
-                insightHistory = decoded
-            } catch {
-                print("Failed to decode insight history:", error)
-            }
-        }
-    }
-
-    func saveInsightsToStorage() {
-        do {
-            let data = try JSONEncoder().encode(insightHistory)
-            UserDefaults.standard.set(data, forKey: insightsKey)
-        } catch {
-            print("Failed to save insight history:", error)
-        }
-    }
-    
-    func clearInsightHistory() {
-        insightHistory.removeAll()
-        UserDefaults.standard.removeObject(forKey: insightsKey)
-    }
-
-    
-    func isHealthKitPermissionGranted() {
-        guard let stepType = HKObjectType.quantityType(forIdentifier: .stepCount),
-              let sleepType = HKObjectType.categoryType(forIdentifier: .sleepAnalysis) else {
-            return
-        }
-
-        let stepStatus = healthStore.authorizationStatus(for: stepType)
-        let sleepStatus = healthStore.authorizationStatus(for: sleepType)
-
-        isOnboarded =  stepStatus == .sharingAuthorized && sleepStatus == .sharingAuthorized
-    }
-    
     func updateAIInsight() {
         let avgSteps = weeklySteps.reduce(0.0) { $0 + Double($1.steps) } / Double(weeklySteps.count)
         let avgSleep = weeklySleepHours.reduce(0.0) { $0 + Double($1.hours) } / Double(weeklySleepHours.count)
@@ -132,4 +105,5 @@ final class DashboardViewModel: ObservableObject {
             aiInsight = "Unable to generate insight at the moment."
         }
     }
+
 }

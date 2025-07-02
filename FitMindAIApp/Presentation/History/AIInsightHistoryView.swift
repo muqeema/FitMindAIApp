@@ -78,7 +78,7 @@ struct AIInsightHistoryView: View {
                     }
 
                     Button(role: .destructive) {
-                        viewModel.clearInsightHistory()
+                        InsightStorageService.clear()
                     } label: {
                         Image(systemName: "trash")
                     }
