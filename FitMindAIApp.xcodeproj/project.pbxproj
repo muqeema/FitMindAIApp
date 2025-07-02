@@ -7,16 +7,29 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		54285A222E1298B20000E823 /* Swinject in Frameworks */ = {isa = PBXBuildFile; productRef = 54285A212E1298B20000E823 /* Swinject */; };
+		54285B212E1409320000E823 /* Swinject in Frameworks */ = {isa = PBXBuildFile; productRef = 54285B202E1409320000E823 /* Swinject */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		542857752E1028F80000E823 /* FitMindAIApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = FitMindAIApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		54285B192E1404EB0000E823 /* Exceptions for "FitMindAIApp" folder in "FitMindAIApp" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = 542857742E1028F80000E823 /* FitMindAIApp */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		542857772E1028F80000E823 /* FitMindAIApp */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				54285B192E1404EB0000E823 /* Exceptions for "FitMindAIApp" folder in "FitMindAIApp" target */,
+			);
 			path = FitMindAIApp;
 			sourceTree = "<group>";
 		};
@@ -27,7 +40,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				54285A222E1298B20000E823 /* Swinject in Frameworks */,
+				54285B212E1409320000E823 /* Swinject in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -70,7 +83,7 @@
 			);
 			name = FitMindAIApp;
 			packageProductDependencies = (
-				54285A212E1298B20000E823 /* Swinject */,
+				54285B202E1409320000E823 /* Swinject */,
 			);
 			productName = FitMindAIApp;
 			productReference = 542857752E1028F80000E823 /* FitMindAIApp.app */;
@@ -101,7 +114,7 @@
 			mainGroup = 5428576C2E1028F80000E823;
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
-				54285A202E1298B20000E823 /* XCRemoteSwiftPackageReference "Swinject" */,
+				54285B1F2E1409320000E823 /* XCRemoteSwiftPackageReference "Swinject" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 542857762E1028F80000E823 /* Products */;
@@ -186,8 +199,8 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = "";
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = FitMindAIApp/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
@@ -245,8 +258,8 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = "";
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = FitMindAIApp/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
 				MTL_ENABLE_DEBUG_INFO = NO;
@@ -268,8 +281,9 @@
 				DEVELOPMENT_ASSET_PATHS = "\"FitMindAIApp/Preview Content\"";
 				DEVELOPMENT_TEAM = KS5GD74J24;
 				ENABLE_PREVIEWS = YES;
-				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = "";
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = FitMindAIApp/Info.plist;
+				INFOPLIST_KEY_NSHealthClinicalHealthRecordsShareUsageDescription = "This app may write health data in future updates.";
 				INFOPLIST_KEY_NSHealthShareUsageDescription = "This app needs access to your health data for personalized AI insights.";
 				INFOPLIST_KEY_NSHealthUpdateUsageDescription = "This app may write health data in future updates.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
@@ -282,7 +296,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.doceree.socialshare.CircleCIDemo;
+				PRODUCT_BUNDLE_IDENTIFIER = com.muqeem.HealthKitDemo;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
@@ -301,8 +315,9 @@
 				DEVELOPMENT_ASSET_PATHS = "\"FitMindAIApp/Preview Content\"";
 				DEVELOPMENT_TEAM = KS5GD74J24;
 				ENABLE_PREVIEWS = YES;
-				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = "";
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = FitMindAIApp/Info.plist;
+				INFOPLIST_KEY_NSHealthClinicalHealthRecordsShareUsageDescription = "This app may write health data in future updates.";
 				INFOPLIST_KEY_NSHealthShareUsageDescription = "This app needs access to your health data for personalized AI insights.";
 				INFOPLIST_KEY_NSHealthUpdateUsageDescription = "This app may write health data in future updates.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
@@ -315,7 +330,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.doceree.socialshare.CircleCIDemo;
+				PRODUCT_BUNDLE_IDENTIFIER = com.muqeem.HealthKitDemo;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
@@ -347,7 +362,7 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
-		54285A202E1298B20000E823 /* XCRemoteSwiftPackageReference "Swinject" */ = {
+		54285B1F2E1409320000E823 /* XCRemoteSwiftPackageReference "Swinject" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/Swinject/Swinject";
 			requirement = {
@@ -358,9 +373,9 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
-		54285A212E1298B20000E823 /* Swinject */ = {
+		54285B202E1409320000E823 /* Swinject */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = 54285A202E1298B20000E823 /* XCRemoteSwiftPackageReference "Swinject" */;
+			package = 54285B1F2E1409320000E823 /* XCRemoteSwiftPackageReference "Swinject" */;
 			productName = Swinject;
 		};
 /* End XCSwiftPackageProductDependency section */
